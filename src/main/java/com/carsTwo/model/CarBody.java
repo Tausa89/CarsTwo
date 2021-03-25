@@ -4,18 +4,19 @@ import com.carsTwo.model.enums.CarBodyColor;
 import com.carsTwo.model.enums.CarBodyType;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@EqualsAndHashCode
+
 public class CarBody {
 
 
-    private CarBodyColor color;
-    private CarBodyType bodyType;
-    private List<String> components;
+    CarBodyColor color;
+    CarBodyType bodyType;
+
+    @Builder.Default
+    List<String> components = new ArrayList<>();
 }
