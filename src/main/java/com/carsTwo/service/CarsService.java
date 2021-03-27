@@ -1,9 +1,7 @@
 package com.carsTwo.service;
 
 import com.carsTwo.exception.CarsServiceException;
-import com.carsTwo.model.Car;
-import com.carsTwo.model.CarStatistic;
-import com.carsTwo.model.Statistic;
+import com.carsTwo.model.*;
 import com.carsTwo.model.enums.*;
 import lombok.*;
 import org.eclipse.collections.impl.collector.BigDecimalSummaryStatistics;
@@ -15,16 +13,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Builder
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-@EqualsAndHashCode
 public class CarsService {
 
 
     private Set<Car> cars;
-    private SortingType sortingType;
 
     public CarsService(Set<Car> cars) {
         this.cars = cars;
@@ -38,9 +30,9 @@ public class CarsService {
 
         Stream<Car> sortedCars =
                 switch (sortingType) {
-                    case WHEEL_SIZE ->cars.stream().sorted(Comparator.comparing(c -> c.getWheel().getSize()));
-                    case ENGINE -> cars.stream().sorted(Comparator.comparing(c -> c.getEngine().getPower()));
-                    default -> cars.stream().sorted(Comparator.comparing(c -> c.getCarBody().getComponents().size()));
+                    case WHEEL_SIZE -> cars.stream().sorted(WheelUtils.compareBySize);
+                    case ENGINE -> cars.stream().sorted(Comparator.comparing(CarUtils.toEngine.andThen(EngineUtils.toPower)));
+                    default -> cars.stream().sorted(Comparator.comparing(CarUtils.toCarBody.andThen(CarBodyUtils.toAmountOfComponents)));
                 };
 
         var sortedCarList = sortedCars.collect(Collectors.toList());
@@ -74,8 +66,8 @@ public class CarsService {
 
         return cars
                 .stream()
-                .filter(c -> c.getCarBody().getBodyType() == carBodyType)
-                .filter(c -> c.getPrice().compareTo(minPrice) > 0 && c.getPrice().compareTo(maxPrice) < 1)
+                .filter(c -> c.findSameBodyType(carBodyType))
+                .filter(car -> car.hasPriceGreaterThan(minPrice)  && !car.hasPriceGreaterThan(maxPrice))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
@@ -86,8 +78,8 @@ public class CarsService {
 
         return cars
                 .stream()
-                .filter(c -> c.getEngine().getType() == engineType)
-                .sorted(Comparator.comparing(Car::getModel))
+                .filter(c -> c.findSameEngineType(engineType))
+                .sorted(CarUtils.compareByModel)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
@@ -108,7 +100,10 @@ public class CarsService {
 
     private CarStatistic getPriceStatistic() {
 
-        BigDecimalSummaryStatistics priceStats = cars.stream().collect(Collectors2.summarizingBigDecimal(Car::getPrice));
+        BigDecimalSummaryStatistics priceStats = cars
+                .stream()
+                .collect(Collectors2
+                        .summarizingBigDecimal(CarUtils.toPrice::apply));
 
         return CarStatistic
                 .builder()
@@ -123,7 +118,7 @@ public class CarsService {
 
     private CarStatistic getMileageStatistic() {
         DoubleSummaryStatistics mileageStatistics = cars.stream()
-                .collect(Collectors.summarizingDouble(Car::getMileage));
+                .collect(Collectors.summarizingDouble(CarUtils.toMileage::apply));
 
         return CarStatistic
                 .builder()
@@ -141,7 +136,7 @@ public class CarsService {
 
 
         DoubleSummaryStatistics powerStatistics = cars.stream()
-                .collect(Collectors.summarizingDouble(c -> c.getEngine().getPower()));
+                .collect(Collectors.summarizingDouble(CarUtils.toEngine.andThen(EngineUtils.toPower)::apply));
 
         return CarStatistic
                 .builder()
@@ -156,11 +151,11 @@ public class CarsService {
     }
 
 
-    public Map<Car, Integer> getMileageForEveryCar() {
+    public Map<Car, Double> getMileageForEveryCar() {
 
         return cars
                 .stream()
-                .collect(Collectors.toMap(c -> c, Car::getMileage))
+                .collect(Collectors.toMap(c -> c, CarUtils.toMileage))
                 .entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1));
@@ -170,7 +165,7 @@ public class CarsService {
     public Map<TyreType, List<Car>> getCarsWithThisSameWheelType() {
         return cars
                 .stream()
-                .collect(Collectors.groupingBy(c -> c.getWheel().getTyreType()))
+                .collect(Collectors.groupingBy(CarUtils.toWheel.andThen(WheelUtils.toTyreType)))
                 .entrySet()
                 .stream()
                 .sorted((e1, e2) -> Integer.compare(e2.getValue().size(), e1.getValue().size()))
@@ -185,7 +180,7 @@ public class CarsService {
         }
         return cars
                 .stream()
-                .filter(car -> car.getCarBody().getComponents().containsAll(components))
+                .filter(car -> car.doseContainAllComponents(components))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 

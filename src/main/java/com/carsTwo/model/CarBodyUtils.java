@@ -12,5 +12,5 @@ public interface CarBodyUtils {
 
     Function<CarBody, CarBodyColor> toBodyColor = carBody -> carBody.color;
     Function<CarBody, CarBodyType> toBodyType = carBody -> carBody.bodyType;
-    Function<CarBody, List<String>> toComponents = carBody -> new ArrayList<>(carBody.components);
+    Function<CarBody, Integer> toAmountOfComponents = carBody -> carBody.components.size();
 }

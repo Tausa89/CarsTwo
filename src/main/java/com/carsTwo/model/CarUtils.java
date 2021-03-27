@@ -1,12 +1,14 @@
 package com.carsTwo.model;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.function.Function;
 
 public interface CarUtils {
 
 
 
+    Comparator<Car> compareByModel = Comparator.comparing(car -> car.model);
 
 
 

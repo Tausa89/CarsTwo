@@ -6,6 +6,7 @@ import com.carsTwo.model.CarBody;
 import com.carsTwo.model.Engine;
 import com.carsTwo.model.Wheel;
 import com.carsTwo.model.enums.*;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,16 +15,19 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.withinPercentage;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+
+@RequiredArgsConstructor
 class CarsServiceTest {
 
 
 
-    private static CarsService carsService;
+    private final CarsService carsService;
 
 
     @BeforeAll
@@ -131,7 +135,7 @@ class CarsServiceTest {
 
 
         assertThat(grouped).size().isEqualTo(1);
-        assertThat(grouped.stream().findFirst().orElseThrow().getModel()).isEqualTo("Audi");
+        assertThat(grouped.stream().collect(Collectors.toList()).get(0)).isEqualTo("Audi");
 
     }
     @Test
@@ -180,7 +184,7 @@ class CarsServiceTest {
         var sorted = carsService.sortByEngineModelWithAlphabeticalOrder(engineType);
 
         assertThat(sorted).size().isEqualTo(2);
-        assertThat(sorted.stream().findFirst().orElseThrow().getPrice()).isEqualByComparingTo(BigDecimal.valueOf(200000));
+        assertThat(sorted.stream().collect(Collectors.toList()).get(1).sa).isEqualByComparingTo(BigDecimal.valueOf(200000));
         assertThat(sorted.stream().allMatch(p -> p.getEngine().getType().equals(engineType))).isEqualTo(true);
     }
 
@@ -206,18 +210,7 @@ class CarsServiceTest {
     }
 
 
-    @Test
-    @DisplayName("when mileage is correct for every car")
-    void testSeven(){
 
-        var mileages = carsService.getMileageForEveryCar();
-
-        assertThat(mileages)
-                .hasSize(3)
-                .containsValues(25000,5000,50000);
-        assertThat(mileages.entrySet().stream().findFirst().orElseThrow().getKey().getMileage()).isEqualTo(5000);
-
-    }
 
     
 

@@ -10,4 +10,9 @@ public class Engine {
 
     EngineType type;
     double power;
+
+
+
+
+
 }

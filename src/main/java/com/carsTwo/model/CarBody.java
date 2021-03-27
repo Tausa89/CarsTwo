@@ -19,4 +19,8 @@ public class CarBody {
 
     @Builder.Default
     List<String> components = new ArrayList<>();
+
+
+
+
 }
