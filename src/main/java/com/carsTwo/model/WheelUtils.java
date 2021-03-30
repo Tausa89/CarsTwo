@@ -10,7 +10,6 @@ public interface WheelUtils {
 
 
 
-    Comparator<Car> compareBySize = Comparator.comparing(CarUtils.toWheel.andThen(WheelUtils.toSize));
 
 
     Function<Wheel, String> toModel = wheel -> wheel.model;

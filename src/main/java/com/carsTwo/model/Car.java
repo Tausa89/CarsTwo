@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 public class Car {
 
-
     String model;
     BigDecimal price;
     double mileage;

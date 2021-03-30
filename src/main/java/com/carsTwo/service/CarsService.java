@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Builder
+
 public class CarsService {
 
 
@@ -25,14 +25,14 @@ public class CarsService {
     public List<Car> sortingByGivenOrder(SortingType sortingType, boolean descending) {
 
         if (Objects.isNull(sortingType)) {
-            throw new IllegalStateException("Sorting type is null");
+            throw new CarsServiceException("Sorting type is null");
         }
 
         Stream<Car> sortedCars =
                 switch (sortingType) {
-                    case WHEEL_SIZE -> cars.stream().sorted(WheelUtils.compareBySize);
-                    case ENGINE -> cars.stream().sorted(Comparator.comparing(CarUtils.toEngine.andThen(EngineUtils.toPower)));
-                    default -> cars.stream().sorted(Comparator.comparing(CarUtils.toCarBody.andThen(CarBodyUtils.toAmountOfComponents)));
+                    case WHEEL_SIZE -> cars.stream().sorted(Comparator.comparing(CarUtils.toWheel.andThen(WheelUtils.toSize)));
+                    case ENGINE_POWER -> cars.stream().sorted(Comparator.comparing(CarUtils.toEngine.andThen(EngineUtils.toPower)));
+                    case COMPONENT -> cars.stream().sorted(Comparator.comparing(CarUtils.toCarBody.andThen(CarBodyUtils.toAmountOfComponents)));
                 };
 
         var sortedCarList = sortedCars.collect(Collectors.toList());
@@ -72,9 +72,12 @@ public class CarsService {
     }
 
 
-    public Set<Car> sortByEngineModelWithAlphabeticalOrder(@NonNull EngineType engineType) {
+    public Set<Car> sortByEngineModelWithAlphabeticalOrder(EngineType engineType) {
 
 
+        if(Objects.isNull(engineType)){
+            throw new CarsServiceException("Engine type is null");
+        }
 
         return cars
                 .stream()
@@ -86,8 +89,8 @@ public class CarsService {
 
     public CarStatistic getStatisticByGivenAttribute(StatisticAttribute statisticAttribute){
 
-        if(statisticAttribute == null){
-            throw new IllegalStateException("Statistic attribute is null");
+        if(Objects.isNull(statisticAttribute)){
+            throw new CarsServiceException("Statistic attribute is null");
         }
 
         return switch (statisticAttribute) {
@@ -176,7 +179,7 @@ public class CarsService {
     public Set<Car> findAllWithComponents(List<String> components) {
 
         if(components == null){
-            throw new IllegalStateException("Components list is null");
+            throw new CarsServiceException("Components list is null");
         }
         return cars
                 .stream()
