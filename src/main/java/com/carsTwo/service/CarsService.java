@@ -3,7 +3,6 @@ package com.carsTwo.service;
 import com.carsTwo.exception.CarsServiceException;
 import com.carsTwo.model.*;
 import com.carsTwo.model.enums.*;
-import lombok.*;
 import org.eclipse.collections.impl.collector.BigDecimalSummaryStatistics;
 import org.eclipse.collections.impl.collector.Collectors2;
 
@@ -22,6 +21,15 @@ public class CarsService {
         this.cars = cars;
     }
 
+
+    /**
+     *
+     * Method allowed to sorting collection by given Sorting Type with required order descending
+     * or ascending
+     * @param sortingType Enum decide according to what collection should be sorted.
+     * @param descending boolean decide about sorting order.
+     * @return Set sorted by given parameters
+     */
     public List<Car> sortingByGivenOrder(SortingType sortingType, boolean descending) {
 
         if (Objects.isNull(sortingType)) {
@@ -47,8 +55,14 @@ public class CarsService {
     }
 
 
-
-    public Set<Car> sortByBodyTypeAndPriceRange(CarBodyType carBodyType, BigDecimal minPrice, BigDecimal maxPrice) {
+    /**
+     * Method allowed to select from given collection cars with specified BodyTyp in given price range.
+     * @param carBodyType Enum according to which cars are selected
+     * @param minPrice BigDecimal the lowest price range
+     * @param maxPrice BigDecimal the highest price range
+     * @return Set of cars with specified body typ and price higher than minimal price and lower than maximal price
+     */
+    public Set<Car> groupBySpecifiedBodyTypeWithGivenPriceRange(CarBodyType carBodyType, BigDecimal minPrice, BigDecimal maxPrice) {
 
         if(Objects.isNull(carBodyType)){
             throw new CarsServiceException("Body Type can't be null");
@@ -72,7 +86,12 @@ public class CarsService {
     }
 
 
-    public Set<Car> sortByEngineModelWithAlphabeticalOrder(EngineType engineType) {
+    /**
+     * Method select from whole collection cars with specified Engine type and sort them alphabetically
+     * @param engineType Enum according to which cars are selected
+     * @return Set of cars with specified engine alphabetically sorted
+     */
+    public Set<Car> groupByGivenEngineTypeWithAlphabeticalOrder(EngineType engineType) {
 
 
         if(Objects.isNull(engineType)){
@@ -87,6 +106,13 @@ public class CarsService {
     }
 
 
+    /**
+     * Method provide base statistic like minimal, maximal or average value for whole collection taking as a argument
+     * parameter for which on statistic should be counted.
+     *
+     * @param statisticAttribute Enum decide which statistic should be counted.
+     * @return cars statistics for given as parameter required attribute.
+     */
     public CarStatistic getStatisticByGivenAttribute(StatisticAttribute statisticAttribute){
 
         if(Objects.isNull(statisticAttribute)){
@@ -153,6 +179,10 @@ public class CarsService {
 
     }
 
+    /**
+     * Method provided mileage for evey single car in collection
+     * @return Map with car as a key and value of mileage for every car.
+     */
 
     public Map<Car, Double> getMileageForEveryCar() {
 
@@ -165,6 +195,10 @@ public class CarsService {
     }
 
 
+    /**
+     * Method group cars by type of tyre they have
+     * @return Map with type of tyre as a key and List of cars having this tyre as value.
+     */
     public Map<TyreType, List<Car>> getCarsWithThisSameWheelType() {
         return cars
                 .stream()
@@ -175,6 +209,12 @@ public class CarsService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1, LinkedHashMap::new));
 
     }
+
+    /**
+     * Method allowed to find a cars with specified components list.
+     * @param components List of components that car should have
+     * @return Set of cars having all components given as parameter.
+     */
 
     public Set<Car> findAllWithComponents(List<String> components) {
 

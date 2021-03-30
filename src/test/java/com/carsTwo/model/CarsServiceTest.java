@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 
 import static org.assertj.core.api.Assertions.withinPercentage;
@@ -37,7 +36,7 @@ class CarsServiceTest {
         var bodyType = CarBodyType.COMBI;
         var minPrice = BigDecimal.valueOf(50000);
         var maxPrice = BigDecimal.valueOf(300000);
-        var grouped = carsService.sortByBodyTypeAndPriceRange(bodyType,minPrice,maxPrice);
+        var grouped = carsService.groupBySpecifiedBodyTypeWithGivenPriceRange(bodyType,minPrice,maxPrice);
 
 
         assertThat(grouped).size().isEqualTo(1);
@@ -52,7 +51,7 @@ class CarsServiceTest {
             var bodyType = CarBodyType.COMBI;
             var minPrice = BigDecimal.valueOf(5000000);
             var maxPrice = BigDecimal.valueOf(300000);
-            carsService.sortByBodyTypeAndPriceRange(bodyType,minPrice,maxPrice);
+            carsService.groupBySpecifiedBodyTypeWithGivenPriceRange(bodyType,minPrice,maxPrice);
         });
     }
 
@@ -68,17 +67,17 @@ class CarsServiceTest {
         assertThrows(CarsServiceException.class, () -> {
 
 
-            carsService.sortByBodyTypeAndPriceRange(null,minPrice,maxPrice);
+            carsService.groupBySpecifiedBodyTypeWithGivenPriceRange(null,minPrice,maxPrice);
         });
 
         assertThrows(CarsServiceException.class, () -> {
 
-           carsService.sortByBodyTypeAndPriceRange(bodyType,null,maxPrice);
+           carsService.groupBySpecifiedBodyTypeWithGivenPriceRange(bodyType,null,maxPrice);
         });
 
        assertThrows(CarsServiceException.class, () -> {
 
-            carsService.sortByBodyTypeAndPriceRange(bodyType,minPrice,null);
+            carsService.groupBySpecifiedBodyTypeWithGivenPriceRange(bodyType,minPrice,null);
         });
     }
 
@@ -87,7 +86,7 @@ class CarsServiceTest {
     void testFour(){
 
         var engineType = EngineType.DIESEL;
-        var sorted = carsService.sortByEngineModelWithAlphabeticalOrder(engineType);
+        var sorted = carsService.groupByGivenEngineTypeWithAlphabeticalOrder(engineType);
 
         assertThat(sorted).size().isEqualTo(2);
         assertThat(sorted.stream().findFirst().orElseThrow().price).isEqualByComparingTo(BigDecimal.valueOf(200000));
@@ -100,7 +99,7 @@ class CarsServiceTest {
 
         assertThrows(CarsServiceException.class, () -> {
 
-            carsService.sortByEngineModelWithAlphabeticalOrder(null);
+            carsService.groupByGivenEngineTypeWithAlphabeticalOrder(null);
         });
     }
 
