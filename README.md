@@ -22,4 +22,4 @@ With Enums and composition, refactored to be more functional.
 
 
 ## Features
-
+Allowed to manage collection of Cars depends on needs with more complex requirements like finding all cares with this same components.
